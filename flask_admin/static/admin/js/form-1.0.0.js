@@ -73,9 +73,12 @@
        * Process Leaflet (map) widget
        */
       function processLeafletWidget($el, name) {
-        if (!(window.MAPBOX_MAP_ID && window.MAPBOX_ACCESS_TOKEN)) {
+        if (!window.MAPBOX_MAP_ID) {
           console.error("You must set MAPBOX_MAP_ID and MAPBOX_ACCESS_TOKEN in your Flask settings to use the map widget");
           return false;
+        }
+        if (!window.MAPBOX_ACCESS_TOKEN) {
+          console.warn("You must set MAPBOX_ACCESS_TOKEN in your Flask settings to use the map widget with mapbox v4 API");
         }
 
         var geometryType = $el.data("geometry-type")
@@ -155,7 +158,8 @@
         }
 
         // set up tiles
-        L.tileLayer('http://{s}.tiles.mapbox.com/v4/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png?access_token=' + MAPBOX_ACCESS_TOKEN, {
+        mapbox_version = window.MAPBOX_ACCESS_TOKEN ? 4 : 3;
+        L.tileLayer('http://{s}.tiles.mapbox.com/v'+mapbox_version+'/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png?access_token=' + window.MAPBOX_ACCESS_TOKEN, {
           attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
           maxZoom: 18
         }).addTo(map);
